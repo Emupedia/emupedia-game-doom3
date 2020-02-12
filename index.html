@@ -100,7 +100,7 @@
 
 			#status {
 				/*display: inline-block;*/
-				display: none;
+				display: none !important;
 				vertical-align: top;
 				margin-top: 10px;
 				margin-left: 20px;
@@ -145,11 +145,10 @@
 				width: 100%;
 				height: 200px;
 				margin: 0 auto;
-				margin-top: 0px;
-				border-left: 0px;
-				border-right: 0px;
-				padding-left: 0px;
-				padding-right: 0px;
+				border-left: 0;
+				border-right: 0;
+				padding-left: 0;
+				padding-right: 0;
 				display: block;
 				background-color: black;
 				color: white;
@@ -159,14 +158,14 @@
 		</style>
 	</head>
 	<body>
-		<div class="spinner" id='spinner'></div>
+		<div class="spinner" id="spinner"></div>
 		<div class="emscripten" id="status">Downloading...</div>
 
 		<div class="emscripten">
-			<progress value="0" max="100" id="progress" hidden=1></progress>
+			<progress value="0" max="100" id="progress" hidden="1"></progress>
 		</div>
 		<div class="emscripten_border">
-			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
 		</div>
 
 		<script type="text/javascript" src="/beta/emuos/js/defines.js"></script>
