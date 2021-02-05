@@ -76,11 +76,11 @@ Module.expectedDataFileDownloads++;
 				}
 			};
 			xhr.send(null);
-		};
+		}
 
 		function handleError(error) {
 			console.error('package error:', error);
-		};
+		}
 
 		function runWithFS() {
 
@@ -364,8 +364,7 @@ Module.expectedDataFileDownloads++;
 			if (!Module['postRun']) Module['postRun'] = [];
 			Module["postRun"].push(runWithFS); // FS is not initialized yet, wait for it
 		}
-
 	}
-	loadPackage({"files": [{"start": 0, "audio": 0, "end": 13930308, "filename": "/usr/local/share/d3wasm/base/demo_game00.pk4"}], "remote_package_size": 13930308, "package_uuid": "9a3de577-bfd1-4b8d-887b-718423ef7a2d"});
 
+	loadPackage({"files": [{"start": 0, "audio": 0, "end": 13930308, "filename": "/usr/local/share/d3wasm/base/demo_game00.pk4"}], "remote_package_size": 13930308, "package_uuid": "9a3de577-bfd1-4b8d-887b-718423ef7a2d"});
 })();
