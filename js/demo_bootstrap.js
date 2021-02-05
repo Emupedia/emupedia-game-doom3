@@ -278,13 +278,13 @@ Module.expectedDataFileDownloads++;
 
 			function processPackageData(arrayBuffer) {
 				Module.finishedDataFileDownloads++;
-				assert(arrayBuffer, 'Loading data file failed.');
-				assert(arrayBuffer instanceof ArrayBuffer, 'bad input to processPackageData');
-				var byteArray = new Uint8Array(arrayBuffer);
-				var curr;
+				//assert(arrayBuffer, 'Loading data file failed.');
+				//assert(arrayBuffer instanceof ArrayBuffer, 'bad input to processPackageData');
+				//var byteArray = new Uint8Array(arrayBuffer);
+				//var curr;
 
 				// Reuse the bytearray from the XHR as the source for file reads.
-				DataRequest.prototype.byteArray = byteArray;
+				DataRequest.prototype.byteArray = arrayBuffer;
 
 				var files = metadata.files;
 				for (var i = 0; i < files.length; ++i) {
@@ -302,13 +302,17 @@ Module.expectedDataFileDownloads++;
 				console.error(error);
 				console.error('falling back to default preload behavior');
 
-				var dbx = new Dropbox.Dropbox({accessToken: window['DROPBOX_TOKEN'], fetch: fetch});
+				// noinspection JSUnresolvedFunction
+				var file = mega.File.fromURL('https://mega.nz/file/gN1QiSjb#mpJGdMN9hfdiRYLOXT2j0Gu3dchbT4vuHuU7E_qnKYA');
 
-				dbx.filesGetTemporaryLink({path: '/doom3/' + REMOTE_PACKAGE_NAME}).then(function (response) {
-					// noinspection JSCheckFunctionSignatures,JSReferencingMutableVariableFromClosure,JSUnfilteredForInLoop
-					fetchRemotePackage(response.link, REMOTE_PACKAGE_SIZE, processPackageData, handleError);
-				}).catch(function (error) {
-					console.log(error);
+				// noinspection JSUnresolvedFunction
+				file.loadAttributes(function(error, file) {
+					file.download(function (err, data) {
+						if (err) throw err;
+
+						console.log(data);
+						processPackageData(data);
+					});
 				});
 
 				// fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE, processPackageData, handleError);
@@ -324,21 +328,18 @@ Module.expectedDataFileDownloads++;
 						} else {
 							console.info('loading ' + PACKAGE_NAME + ' from remote');
 
-							var dbx = new Dropbox.Dropbox({accessToken: window['DROPBOX_TOKEN'], fetch: fetch});
+							// noinspection JSUnresolvedFunction
+							var file = mega.File.fromURL('https://mega.nz/file/gN1QiSjb#mpJGdMN9hfdiRYLOXT2j0Gu3dchbT4vuHuU7E_qnKYA');
 
-							dbx.filesGetTemporaryLink({path: '/doom3/' + REMOTE_PACKAGE_NAME}).then(function (response) {
-								// noinspection JSCheckFunctionSignatures,JSReferencingMutableVariableFromClosure,JSUnfilteredForInLoop
-								fetchRemotePackage(response.link, REMOTE_PACKAGE_SIZE,
-									function (packageData) {
-										cacheRemotePackage(db, PACKAGE_PATH + PACKAGE_NAME, packageData, {uuid: PACKAGE_UUID}, processPackageData,
-											function (error) {
-												console.error(error);
-												processPackageData(packageData);
-											});
-									}
-									, preloadFallback);
-							}).catch(function (error) {
-								console.log(error);
+							// noinspection JSUnresolvedFunction
+							file.loadAttributes(function(error, file) {
+								file.download(function (err, data) {
+									if (err) throw err;
+									cacheRemotePackage(db, PACKAGE_PATH + PACKAGE_NAME, data, {uuid: PACKAGE_UUID}, processPackageData,function (error) {
+										console.error(error);
+										processPackageData(data);
+									});
+								});
 							});
 						}
 					}

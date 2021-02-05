@@ -76,11 +76,11 @@ Module.expectedDataFileDownloads++;
 				}
 			};
 			xhr.send(null);
-		};
+		}
 
 		function handleError(error) {
 			console.error('package error:', error);
-		};
+		}
 
 		function runWithFS() {
 
@@ -284,13 +284,13 @@ Module.expectedDataFileDownloads++;
 
 			function processPackageData(arrayBuffer) {
 				Module.finishedDataFileDownloads++;
-				assert(arrayBuffer, 'Loading data file failed.');
-				assert(arrayBuffer instanceof ArrayBuffer, 'bad input to processPackageData');
-				var byteArray = new Uint8Array(arrayBuffer);
-				var curr;
+				//assert(arrayBuffer, 'Loading data file failed.');
+				//assert(arrayBuffer instanceof ArrayBuffer, 'bad input to processPackageData');
+				//var byteArray = new Uint8Array(arrayBuffer);
+				//var curr;
 
 				// Reuse the bytearray from the XHR as the source for file reads.
-				DataRequest.prototype.byteArray = byteArray;
+				DataRequest.prototype.byteArray = arrayBuffer;
 
 				var files = metadata.files;
 				for (var i = 0; i < files.length; ++i) {
@@ -308,13 +308,15 @@ Module.expectedDataFileDownloads++;
 				console.error(error);
 				console.error('falling back to default preload behavior');
 
-				var dbx = new Dropbox.Dropbox({accessToken: window['DROPBOX_TOKEN'], fetch: fetch});
+				// noinspection JSUnresolvedFunction
+				var file = mega.File.fromURL('https://mega.nz/file/oVUkCDpT#nxl8GhgpWaxRvrKNDkLcwwqVIWT-AU1I2xDYdVqZEIA');
 
-				dbx.filesGetTemporaryLink({path: '/doom3/' + REMOTE_PACKAGE_NAME}).then(function (response) {
-					// noinspection JSCheckFunctionSignatures,JSReferencingMutableVariableFromClosure,JSUnfilteredForInLoop
-					fetchRemotePackage(response.link, REMOTE_PACKAGE_SIZE, processPackageData, handleError);
-				}).catch(function (error) {
-					console.log(error);
+				// noinspection JSUnresolvedFunction
+				file.loadAttributes(function(error, file) {
+					file.download(function (err, data) {
+						if (err) throw err;
+						processPackageData(data);
+					});
 				});
 
 				//fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE, processPackageData, handleError);
@@ -331,21 +333,18 @@ Module.expectedDataFileDownloads++;
 							} else {
 								console.info('loading ' + PACKAGE_NAME + ' from remote');
 
-								var dbx = new Dropbox.Dropbox({accessToken: window['DROPBOX_TOKEN'], fetch: fetch});
+								// noinspection JSUnresolvedFunction
+								var file = mega.File.fromURL('https://mega.nz/file/oVUkCDpT#nxl8GhgpWaxRvrKNDkLcwwqVIWT-AU1I2xDYdVqZEIA');
 
-								dbx.filesGetTemporaryLink({path: '/doom3/' + REMOTE_PACKAGE_NAME}).then(function (response) {
-									// noinspection JSCheckFunctionSignatures,JSReferencingMutableVariableFromClosure,JSUnfilteredForInLoop
-									fetchRemotePackage(response.link, REMOTE_PACKAGE_SIZE,
-										function (packageData) {
-											cacheRemotePackage(db, PACKAGE_PATH + PACKAGE_NAME, packageData, {uuid: PACKAGE_UUID}, processPackageData,
-												function (error) {
-													console.error(error);
-													processPackageData(packageData);
-												});
-										}
-										, preloadFallback);
-								}).catch(function (error) {
-									console.log(error);
+								// noinspection JSUnresolvedFunction
+								file.loadAttributes(function(error, file) {
+									file.download(function (err, data) {
+										if (err) throw err;
+										cacheRemotePackage(db, PACKAGE_PATH + PACKAGE_NAME, data, {uuid: PACKAGE_UUID}, processPackageData,function (error) {
+											console.error(error);
+											processPackageData(data);
+										});
+									});
 								});
 							}
 						}
@@ -363,8 +362,7 @@ Module.expectedDataFileDownloads++;
 			if (!Module['postRun']) Module['postRun'] = [];
 			Module["postRun"].push(runWithFS); // FS is not initialized yet, wait for it
 		}
-
 	}
-	loadPackage({"files": [{"start": 0, "audio": 0, "end": 388213789, "filename": "/usr/local/share/d3wasm/base/demo_game01.pk4"}], "remote_package_size": 388213789, "package_uuid": "649ebc9e-f81b-418b-b10d-02b7b6213937"});
 
+	loadPackage({"files": [{"start": 0, "audio": 0, "end": 388213789, "filename": "/usr/local/share/d3wasm/base/demo_game01.pk4"}], "remote_package_size": 388213789, "package_uuid": "649ebc9e-f81b-418b-b10d-02b7b6213937"});
 })();
